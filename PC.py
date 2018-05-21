@@ -42,14 +42,17 @@ modeler.set_units('mm')
 
 c = Circuit(design, modeler)
 
+KeyElt.is_mask = True
+KeyElt.gap_mask = parse_entry('20um')
+
 #######################
 ### DRAWING STARTS HERE 
 #######################
 
 ### PCB, Chip and Ground Plane
 
-#c.set_variable("chip_width", "8.67mm")
-#c.set_variable("chip_length", "8.12mm")
+c.set_variable("chip_width", "8.67mm")
+c.set_variable("chip_length", "8.12mm")
 #c.set_variable("chip_thickness", "280um")
 #c.set_variable("pcb_thickness", "320um")
 #c.set_variable('vaccuum_thickness', 6*c.chip_thickness)
@@ -64,31 +67,38 @@ c = Circuit(design, modeler)
 
 ### Connectors
 
-#con1, con2, con3, con4, con5 = '4.06mm', '3.01mm', '7.54mm', '3.01mm', '6.36mm'
-#KeyElt.pcb_track, KeyElt.pcb_gap = parse_entry('300um'), parse_entry('200um')
-#bond_length, bond_slope = '200um', '0.5'
-#c.set_variable('track', '84um')
-#c.set_variable('gap', '50um')
+con1, con2, con3, con4, con5 = '4.06mm', '3.01mm', '7.54mm', '3.01mm', '6.36mm'
+KeyElt.pcb_track, KeyElt.pcb_gap = parse_entry('300um'), parse_entry('200um')
+bond_length, bond_slope = '200um', '0.5'
+c.set_variable('track', '3um')
+c.set_variable('gap', '50um')
 #
 #
-#c.key_elt('in_right', [con3, c.chip_length], [0, -1])
+c.key_elt('in_right', [con3, c.chip_length], [0, -1])
 #c.key_elt('flux_right', [con2, c.chip_length], [0, -1])
 #
 #c.key_elt('in_left', [con5, 0], [0, 1])
 #c.key_elt('flux_left', [con4, 0], [0, 1])
 #
-#c.in_right.draw_connector(c.track, c.gap, bond_length, bond_slope)
+c.in_right.draw_connector(c.track, c.gap, bond_length, bond_slope)
 #c.flux_right.draw_connector(c.track, c.gap, bond_length, bond_slope)
 #c.in_left.draw_connector(c.track, c.gap, bond_length, bond_slope)
 #c.flux_left.draw_connector(c.track, c.gap, bond_length, bond_slope)
 
 ### Circuit
-
+#
 #c.key_elt('trm', ['5mm','5.5mm'], [1,0])
 #c.trm.draw_ZR_transmon(['1.52mm', '0.8mm'], '0.12mm', ['0.5mm', '0.5mm'], '84um', '50um', '0.2mm', '30um', '0mm', '0.01mm', '12nH', pad_size_left=['0.6mm', '0.5mm'], track_left='3um', gap_left='50um', length_left='0.2mm', spacing_left='50um', short_left='10um', fillet=True)#, pad_size_right=['0.5mm', '0.5mm'], track_right='84um', gap_right='50um', length_right'0.2mm', spacing_right='30um', short_right='0mm', 
 
-c.key_elt('array', ['0','0'], [1,0])
-c.array.draw_snail_array('600nm', '9um', 3, '1um', 1, 20, '400nm', ['10um', '10um'])
+c.key_elt('T', ['5mm','5.5mm'], [1,0])
+c.T.draw_end_cable(c.track, c.gap, typeEnd='short')
+
+#c.key_elt('JJ', ['5mm','5.5mm'], [1,0])
+#c.JJ.draw_JJ(c.track, c.gap, c.track/4, '200um')    
+
+
+#c.key_elt('array', ['0','0'], [1,0])
+#c.array.draw_snail_array('600nm', '9um', 3, '1um', 1, 20, '400nm', ['10um', '10um'])
 #    def draw_ZR_tansmon(self,
 #                        cutout_size,
 #                        pad_spacing,
