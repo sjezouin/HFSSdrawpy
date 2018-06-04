@@ -45,7 +45,7 @@ c = Circuit(design, modeler)
 
 KeyElt.is_mask = False
 KeyElt.gap_mask = parse_entry('20um')
-KeyElt.overdev = parse_entry('0.9um')
+#KeyElt.overdev = parse_entry('0.9um')
 
 #######################
 ### DRAWING STARTS HERE 
