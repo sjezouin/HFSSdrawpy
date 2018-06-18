@@ -234,12 +234,12 @@ c.capaW.draw_capa(c.track, c.gap, c.capaW_spacing, [c.capaW_width, c.capaW_lengt
 ######CREATE WASTE RESONATOR
 c.set_variable('meander_length_W','1.355mm')
 c.connect_elt('res_Waste', 'capaW_1', 'transmon_2')
-c.res_Waste.draw_cable(fillet=c.fillet, is_meander=True, to_meander=[0, -1, 0], meander_length=c.meander_length_W, ismesh=True)
+c.res_Waste.draw_cable(fillet=c.fillet, is_meander=True, to_meander=[0, -1, 0], meander_length=c.meander_length_W, is_mesh=True)
 
 ######CREATE PURCELL RESONATOR
 c.set_variable('meander_length_PurW','1.29mm')
 c.connect_elt('resPurcell_Waste', 'capaW_2', 'capaPurW_2')
-c.resPurcell_Waste.draw_cable(fillet=c.fillet, is_meander=True, to_meander=[0, -1, 0], meander_length=c.meander_length_PurW, ismesh=True)
+c.resPurcell_Waste.draw_cable(fillet=c.fillet, is_meander=True, to_meander=[0, -1, 0], meander_length=c.meander_length_PurW, is_mesh=True)
 
 
 
@@ -259,7 +259,7 @@ c.set_variable("L_SQUID", '0.1nH')
 
 ######DEFINE SQUID
 c.key_elt('squid', (c.capaB.pos+c.TB_Capa.pos)/2, [1,0])
-c.squid.draw_squid(c.track, c.gap, [2*c.track, c.track], c.track/2, c.gap/2, iTrackSquid=c.track/4, iTrackJ=c.track/10,  Lj_down=c.L_SQUID, Lj_up=c.L_SQUID, typePump='down', doublePump=False, fillet=c.track/2)
+c.squid.draw_squid(c.track, c.gap, [2*c.track, c.track], c.track/2, c.gap/2, iTrackSquid=c.track/4, iTrackJ=c.track/10,  Lj_down=c.L_SQUID, Lj_up=c.L_SQUID, typePump='down', doublePump=False, fillet=None)#c.track/2)
 # first track and gap correspond to the track and gap of the line in which the squid is embedded
 # the list tells the inside size of the rectangular loop forming the squid
 # then the track and gap of the input port for current
@@ -280,9 +280,9 @@ c.squid.draw_squid(c.track, c.gap, [2*c.track, c.track], c.track/2, c.gap/2, iTr
 ######CREATE BUFFER RESONATOR
 c.set_variable('meander_length_B','0.535mm')
 c.connect_elt('res_Buffer_bef', 'capaB_1', 'squid_2')
-c.res_Buffer_bef.draw_cable(fillet=c.fillet, is_meander=True, to_meander=[-1, 0], meander_length=c.meander_length_B, ismesh=True)
+c.res_Buffer_bef.draw_cable(fillet=c.fillet, is_meander=True, to_meander=[-1, 0], meander_length=c.meander_length_B, is_mesh=True)
 c.connect_elt('res_Buffer_aft', 'transmon_1', 'squid_1')
-c.res_Buffer_aft.draw_cable(fillet=c.fillet, is_meander=True, to_meander=[-1, 0], meander_length=c.meander_length_B, ismesh=True)
+c.res_Buffer_aft.draw_cable(fillet=c.fillet, is_meander=True, to_meander=[-1, 0], meander_length=c.meander_length_B, is_mesh=True)
 
 ######CREATE PUMP LINE
 c.connect_elt('pump_line', 'flux_con', 'squid_pump')
