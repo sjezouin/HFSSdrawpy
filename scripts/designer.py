@@ -845,7 +845,7 @@ class KeyElt(Circuit):
         
         if not self.is_litho:
             mesh = self.draw_rect_center(self.name+"_mesh", self.coor([0,0]), self.coor_vec(cutout_size))
-            self.modeler.assign_mesh_length(mesh, 2*track, suff='')
+            self.modeler.assign_mesh_length(mesh, 2*track)
 
         track_J=Jwidth*4.
         in_junction = [self.coor([-pad_spacing/2+self.overdev, 0]), self.coor_vec([1,0]), track_J+2*self.overdev, 0]
@@ -1805,9 +1805,9 @@ class KeyElt(Circuit):
 #        out_junction_down = [self.coor([iTrackSnail/2,-squid_size[1]/2-iTrackSnail/2]), self.coor_vec([-1,0]), iTrackSnail, 0]
 #        junction = self.connect_elt(self.name+'_junction_down', in_junction_down, out_junction_down)
 #        junction_pads_down = junction._connect_JJ(iTrackJ, iInduct=Lj_up, fillet=fillet)
-
-        right_track = self.draw_rect_center(self.name+"_added_track1", self.coor([2*(array_room/2+adapt_dist),0]), self.coor_vec([array_room+2*adapt_dist, iTrack]))
-        left_track = self.draw_rect_center(self.name+"_added_track2", self.coor([-2*(array_room/2+adapt_dist),0]), self.coor_vec([array_room+2*adapt_dist, iTrack]))
+        size_track = array_room/4
+        right_track = self.draw_rect_center(self.name+"_added_track1", self.coor([(array_room/2+size_track/2+2*adapt_dist),0]), self.coor_vec([size_track+2*adapt_dist, iTrack]))
+        left_track = self.draw_rect_center(self.name+"_added_track2", self.coor([-(array_room/2+size_track/2+2*adapt_dist),0]), self.coor_vec([size_track+2*adapt_dist, iTrack]))
 
         squid = self.unite([right_track, left_track, track_a, track_c], name=self.name)
         self.trackObjects.append(squid)
@@ -1872,8 +1872,8 @@ class KeyElt(Circuit):
             points_adapt_pump_d = self.append_points(raw_points_adapt_pump_d)
             self.gapObjects.append(self.draw(self.name+"_cutout_pump_d", points_adapt_pump_d))
 
-        portOut1 = [self.pos+self.ori*(array_room/2+adapt_dist)*3, self.ori, iTrack, iGap]
-        portOut2 = [self.pos-self.ori*(array_room/2+adapt_dist)*3, -self.ori, iTrack, iGap]
+        portOut1 = [self.pos+self.ori*(array_room/2+3*adapt_dist+size_track), self.ori, iTrack, iGap]
+        portOut2 = [self.pos-self.ori*(array_room/2+3*adapt_dist+size_track), -self.ori, iTrack, iGap]
         self.ports[self.name+'_1'] = portOut1
         self.ports[self.name+'_2'] = portOut2
 
@@ -2636,7 +2636,7 @@ class ConnectElt(KeyElt, Circuit):
         self.iOut = retOut
 #        return [retIn, retOut]
 
-    def draw_half_capa(self, iLength, iWidth, iGap, add_gap=False,fillet=None):
+    def draw_half_capa(self, iLength, iWidth, iGap, add_gap=False,fillet=None, is_mesh=False):
         '''
         Inputs:
         -------
