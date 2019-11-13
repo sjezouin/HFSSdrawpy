@@ -2035,7 +2035,7 @@ class KeyElt(Circuit):
         return track, gap, length_chain
     
         
-    def draw_squid_chain_test(self, squid_param, Nsquid, dist2ground, draw='edge', layer=None, pads=['80um','80um'], layerbig=None):
+    def draw_squid_chain_test(self, squid_param, Nsquid, dist2ground, draw='edge', layer=None, pads=['80um','80um']):
 
         '''
         _____    ______________    ______
@@ -2093,7 +2093,7 @@ class KeyElt(Circuit):
         elif draw is 'edge':   #starts the squid_chain+pads from the key_elt
             ref_x = 0
             
-        
+
         pad_start = self.draw_rect(self.name+'_pad_start',\
                        self.coor([ref_x, -pads[1]/2]),
                        self.coor_vec([pads[0], pads[1]]))
@@ -2119,7 +2119,6 @@ class KeyElt(Circuit):
             self.layers[layer]['trackObjects'].append(pad_start)
             self.layers[layer]['trackObjects'].append(pad_end)
             
-        enlarge = 1
         ref_x += x_shift + pads[0]
             
         part = self.draw_rect(self.name,\
@@ -2133,13 +2132,13 @@ class KeyElt(Circuit):
                        self.coor_vec([(v1-vv)/2, L1]))
         partbis = self.draw_rect_center(self.name+'_partbis',\
                               self.coor([ref_x + ww + 3*vv/4, ref_y]), \
-                              self.coor_vec([vv/2, height_chain + (L1+L2)*(1-enlarge)/2]))
+                              self.coor_vec([vv/2, height_chain + 0.4e-6]))
         part2right = self.draw_rect_center(self.name+'_part2right',\
                               self.coor([ref_x + 3*v2/4 + w2 - vv/4, ref_y-height_chain/2 + L2/2]), \
-                              self.coor_vec([(v2-vv)/2, L2*enlarge]))
+                              self.coor_vec([(v2-vv)/2, L2*1.1]))
         part1right = self.draw_rect_center(self.name+'_part1right',\
                               self.coor([ref_x + 3*v1/4 + w1 - vv/4, ref_y-height_chain/2 + L2+LL+L1/2]), \
-                              self.coor_vec([(v1-vv)/2, L1*enlarge]))
+                              self.coor_vec([(v1-vv)/2, L1*1.1]))
         names = [part, part2left, part1left, partbis, part2right, part1right]
         self.unite(names)
         if Nsquid > 1:
@@ -2150,17 +2149,6 @@ class KeyElt(Circuit):
            self.trackObjects.append(part)
         else:
             self.layers[layer]['trackObjects'].append(part)
-            
-        if layerbig is not None:
-             self.draw_rect('upper_pad',
-                        self.coor([ref_x+10e-6, ref_y-37.5e-6]),
-                        self.coor_vec([75e-6, 75e-6]))
-             self.draw_rect('lower_pad',
-                            self.coor([ref_x-10e-6, -ref_y-37.5e-6]),
-                            self.coor_vec([-75e-6, 75e-6]))
-             names_120 = ['upper_pad', 'lower_pad']
-             for names in names_120:
-                 self.layers[layerbig]['trackObjects'].append(names)
 
     
     def draw_squid_chain_l4(self, squid_param, Nsquid, dist2ground, Leq='400e-3', draw='edge', litho=True, layer=None, pads=None, cutext='0um', is_pump=False, y_shift=None):
@@ -2399,27 +2387,27 @@ class KeyElt(Circuit):
             else:
                 raise ValueError('need to define a layer for the chain and a layer for the pump')
                 
+        
         if np.isclose(w1+v1, w2+v2) is False:
             raise ValueError('Unit cell is not properly sized')
         if np.isclose(ww+vv, w1+v1) is False:
             raise ValueError('Unit cell is not properly sized')
         if np.isclose(ww+vv, w2+v2) is False:
             raise ValueError('Unit cell is not properly sized')
-        shadow, angle = [4.9e-6, 45*np.pi/180] #LOR20B + S1813 @ 45°
-        shadow, angle = [0.9e-6, 30*np.pi/180] #MAA + PMMA @ 30°
-        h = shadow/2/np.tan(angle)
-        jj1_overlap = 2*h*np.tan(angle) - w1
+        h = 3.3e-6 #thickness of LOR20B+S1813
+        h = 4.9e-6/2/np.tan(np.pi/4)
+        jj1_overlap = 2*h*np.tan(np.pi/4) - w1
         jj1_area = jj1_overlap*L1
-        jj2_overlap = 2*h*np.tan(angle) - w2
+        jj2_overlap = 2*h*np.tan(np.pi/4) - w2
         jj2_area = jj2_overlap*L2
-        loop_width = ww - 2*h*np.tan(angle)
+        loop_width = ww - 2*h*np.tan(np.pi/4)
         loop_area = loop_width*LL
-        contact_overlap = vv - 2*h*np.tan(angle)
-        contact_area = contact_overlap*LL + (v1 - 2*h*np.tan(angle))*L1 + (v2 - 2*h*np.tan(angle))*L2
+        contact_overlap = vv - 2*h*np.tan(np.pi/4)
+        contact_area = contact_overlap*LL + (v1 - 2*h*np.tan(np.pi/4))*L1 + (v2 - 2*h*np.tan(np.pi/4))*L2
         length_chain = Nsquid*(vv+ww)
         height_chain = L1 + L2 + LL
         print('--------------')
-        print('SQUID parameters given angle='+str(np.round(angle*180/np.pi))+', shadow='+str(shadow)+'nm, h='+str(np.round(h*1e9))+'nm')
+        print('SQUID parameters given LOR20B+S1813')
         print('- jj1_overlap     : ', np.round(jj1_overlap*1e6,3), 'um')
         print('- jj1_area        : ', np.round(jj1_area*1e12,3), 'um2')
         print('- jj2_overlap     : ', np.round(jj2_overlap*1e6,3), 'um')
@@ -2428,16 +2416,14 @@ class KeyElt(Circuit):
         print('- loop_area      : ', np.round(loop_area*1e12,3), 'um2')
         print('- contact_overlap: ', np.round(contact_overlap*1e6,3), 'um')
         print('- contact_area   : ', np.round(contact_area*1e12,3), 'um2')
-        print('- length_chain   : ', np.round(length_chain*1e6), 'um')
-        print('- height_chain   : ', np.round(height_chain*1e6), 'um')
+        print('- length_chain   : ', length_chain*1e3, 'mm')
         print('--------------')
 
         if draw is 'centered': #centers the squid_chain+pads on the key_elt
             ref_x = -length_chain/2
         elif draw is 'edge':   #starts the squid_chain+pads from the key_elt
             ref_x = 0
-        
-        enlarge = 1
+            
         if litho:
             self.draw_rect(self.name,\
                            self.coor([ref_x, -height_chain/2]), \
@@ -2450,13 +2436,13 @@ class KeyElt(Circuit):
                            self.coor_vec([(v1-vv)/2, L1]))
             self.draw_rect_center(self.name+'_partbis',\
                                   self.coor([ref_x + ww + 3*vv/4, 0]), \
-                                  self.coor_vec([vv/2, height_chain + (L1+L2)*(1-enlarge)/2]))
+                                  self.coor_vec([vv/2, height_chain + (L1+L2)*0.1/2]))
             self.draw_rect_center(self.name+'_part2right',\
                                   self.coor([ref_x + 3*v2/4 + w2 - vv/4, -height_chain/2 + L2/2]), \
-                                  self.coor_vec([(v2-vv)/2, L2*enlarge]))
+                                  self.coor_vec([(v2-vv)/2, L2*1.1]))
             self.draw_rect_center(self.name+'_part1right',\
                                   self.coor([ref_x + 3*v1/4 + w1 - vv/4, -height_chain/2 + L2+LL+L1/2]), \
-                                  self.coor_vec([(v1-vv)/2, L1*enlarge]))
+                                  self.coor_vec([(v1-vv)/2, L1*1.1]))
             suffix = ['_part2left', '_part1left', '_partbis', '_part2right', '_part1right']
             self.unite([self.name]+[self.name+suffix[ii] for ii in range(5)])
             if Nsquid > 1:
@@ -2557,37 +2543,6 @@ class KeyElt(Circuit):
             self.ports[self.name+'_pump_1'] = portOutpump1
             self.ports[self.name+'_pump_2'] = portOutpump2
             
-    def draw_test_Marius(self, width, length, layers=['7p5', '120']):
-         
-         width, length = parse_entry((width, length))
-         
-         self.draw_rect('upper_arm',
-                        self.coor([-length/2, width/2]),
-                        self.coor_vec([length, 10e-6]))
-         self.draw_rect('lower_arm',
-                        self.coor([-length/2, -width/2]),
-                        self.coor_vec([length, -10e-6]))
-         self.draw_rect('upper_square',
-                        self.coor([-5e-6, width/2+10e-6]),
-                        self.coor_vec([10e-6, 10e-6]))
-         self.draw_rect('lower_square',
-                        self.coor([-5e-6, -width/2-10e-6]),
-                        self.coor_vec([10e-6, -10e-6]))
-         names_7p5 = ['upper_arm', 'lower_arm', 'upper_square', 'lower_square']
-         for names in names_7p5:
-             self.layers[layers[0]]['trackObjects'].append(names)
-        
-         self.draw_rect('upper_pad',
-                        self.coor([-37.5e-6, width/2+10e-6]),
-                        self.coor_vec([75e-6, 75e-6]))
-         self.draw_rect('lower_pad',
-                        self.coor([-37.5e-6, -width/2-10e-6]),
-                        self.coor_vec([75e-6, -75e-6]))
-         names_120 = ['upper_pad', 'lower_pad']
-         for names in names_120:
-             self.layers[layers[1]]['trackObjects'].append(names)
-                
-        
             
     def draw_snails(self, iTrack, iGap, array_room, array_offset, iTrackPump, iGapPump, mode='litho', iTrackMinPump=None, iTrackSnail=None, fillet=None, N_snails=1, snail_dict={'loop_width':20e-6, 'loop_length':20e-6, 'length_big_junction':10e-6, 'length_small_junction':2e-6, 'bridge':1e-6, 'bridge_spacing':1e-6}, L_eq = '1nH'): #for now assume left and right tracks are the same width
         '''
@@ -5339,20 +5294,19 @@ class ConnectElt(KeyElt, Circuit):
                     prev_ori = ori
                 else:
                     next_ori=way(self.val(points[indices[1]+1]-B)) #should be fine, if we have a fillet we have some straight portion after
-#   commented  on 20191029 due to printing error
-#                    print(f'kind={kind}')
+                    print(f'kind={kind}')
                     ex = next_ori
                     ey = prev_ori
-#                    print(f'ex={ex}')
-#                    print(f'ey={ey}')
+                    print(f'ex={ex}')
+                    print(f'ey={ey}')
                     pos_center = A + ex*(B-A).dot(ex)
                     print(pos_center)
                     theta = remain/fillet
                     print(theta*180/np.pi)
                     pos = pos_center - ex*np.cos(theta)*fillet + ey * np.sin(theta)*fillet
-#                    print(f'pos={pos}')
+                    print(f'pos={pos}')
                     ori = ey*np.cos(theta) + ex*np.sin(theta)
-#                    print(f'ori={ori}')
+                    print(f'ori={ori}')
                     width = 0.0004
                     self.draw_wirebond('wire', pos, ori, width)
                 dist_fillet += unit_dist_fillet
